@@ -21,6 +21,7 @@ h2{margin:0 0 8px;font-size:1.5rem;color:#39294c}h3{margin:0 0 8px;color:#39294c
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .story-card{background:#fffdf6;border:1px solid var(--line);border-radius:18px;padding:17px;text-align:left;cursor:pointer;min-height:180px;display:flex;flex-direction:column;gap:7px;box-shadow:0 4px 0 #e8ddc9}
 .story-card:hover{transform:translateY(-3px);box-shadow:0 7px 0 #e8ddc9}
+.story-card{cursor:default}.story-card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}.story-card-actions .btn{flex:1 1 130px;text-align:center}.secret-copy{font-size:1.05rem;line-height:2;white-space:normal}.secret-copy p{margin:0 0 1.1em}.secret-note{padding:10px 14px;border-radius:12px;background:#f1e9f2;color:#594466}
 .emoji{font-size:2rem}.story-card strong{font-size:1.12rem}.tag{display:inline-block;border-radius:999px;background:#eee4f3;color:#63476d;padding:4px 9px;font-size:.78rem;font-weight:800;align-self:flex-start}
 .btn{background:var(--plum);color:white;margin:4px 4px 4px 0}.btn.gold{background:#e9b94f;color:#2d2540}.btn.light{background:#e9e0ef;color:#39294c}.btn:disabled{opacity:.45;cursor:not-allowed}
 .hidden{display:none!important}.question{border:1px solid var(--line);background:#fffdf7;padding:17px;border-radius:16px;margin:14px 0}.choices{display:grid;gap:9px;margin-top:12px}.choice{background:#fff;border:1px solid #d9cdb8;border-radius:12px;padding:12px;text-align:left;cursor:pointer;font-size:1rem}.choice:hover{border-color:var(--plum);background:#f6eef8}.choice.correct{background:#dff3e6;border-color:#63a77d}.choice.wrong{background:#ffe6e2;border-color:#ce8177}
@@ -87,6 +88,14 @@ footer{text-align:center;color:#e4e5f0;padding:10px 20px 28px;font-size:.85rem}
     <div id="storyDetail" class="question"></div>
   </section>
 
+  <section id="storySecret" class="panel hidden">
+    <div class="challenge-header"><span class="tag">📖 經典小說館｜故事秘笈</span><button class="btn light" id="backFromSecret" type="button">← 返回篇目</button></div>
+    <h2 id="secretTitle"></h2>
+    <p class="secret-note">完整故事秘笈：依據課堂故事文本整理，閱讀後可返回篇目挑戰三道題目。</p>
+    <div id="secretCopy" class="secret-copy"></div>
+    <button class="btn gold" id="startQuizFromSecret" type="button">開始本篇三題挑戰 →</button>
+  </section>
+
   <section id="workshop" class="panel hidden">
     <h2>🎴 第二關：故事創作館</h2>
     <p id="workshopGate">第一關完成六篇故事問答並領取證書後，即可進入第二關故事創作館。完成一篇創作即可領取第二關證書。</p>
@@ -115,15 +124,23 @@ const stories = [
  {id:'qian',name:'倩女幽魂',emoji:'🕯️',tag:'勇氣與救援',desc:'甯采臣在蘭若寺遇見聶小倩，燕赤霞協助對抗妖怪，最後幫助小倩回歸人間、轉世投胎。',q:'聶小倩為什麼受到樹妖姥姥控制？',opts:['她想取得科舉功名','她的屍骨被遺棄在荒野中','她想成為道士','她想奪取黃金劍'],answer:1,explain:'文本說明，聶小倩的屍骨被遺棄在荒野中，因此受到樹妖姥姥控制。',events:['甯采臣赴京途中躲進蘭若寺','聶小倩受姥姥控制，燕赤霞出手救援','燕赤霞使用黃金劍封印姥姥','黑山老妖抓走聶小倩，甯采臣與燕赤霞闖入陰間救她'],whatif:'假如甯采臣一開始聽從勸告，離開蘭若寺，他還能如何幫助聶小倩？',choices:['先尋找其他可靠的人，再設法回來救援','假裝從未遇過聶小倩，完全不再思考','立刻宣布自己能打敗所有妖怪'],branch:['這條路線可以讓主角先求助、蒐集線索，再設計救援計畫。','這是一種選擇，但如果要形成完整故事，需要思考小倩後續的命運。','主角的能力需要有依據；可以安排訓練、盟友或道具作為伏筆。']},
  {id:'paint',name:'畫皮',emoji:'🎭',tag:'外表與真相',desc:'王生收留女子，後發現她是厲鬼；陳氏在道士指引下歷經考驗，最後救回王生。',q:'王生收留女子後，是誰先提醒他身上有邪氣？',opts:['陳氏','市場上的道士','他的朋友','桃太郎'],answer:1,explain:'文本中，市場上的道士提醒王生印堂發黑、身上纏繞邪氣。',events:['王生收留逃家女子','道士警告王生，王生發現女子竟是厲鬼','厲鬼打破蠅拂並害死王生，道士斬下厲鬼首級','陳氏依指示尋找乞丐，取得活心臟救回王生'],whatif:'假如王生一開始就相信道士的警告，故事會怎麼改變？',choices:['他可能先觀察與查證，避免直接陷入危險','他會立刻知道所有事情的結局','所有人物都不再需要做選擇'],branch:['這個方向可發展成「查證線索」的故事，也可以設計新的困難。','如果主角一開始就知道全部真相，懸念會減少；可以保留一個未知。','故事仍需要人物選擇與後果，才能持續推進。']},
  {id:'journey',name:'西遊記',emoji:'🐒',tag:'誤解與信任',desc:'孫悟空識破白骨精卻遭唐僧責罵，離開師徒一行；唐僧遇險後，悟空在同伴請求下歸隊救援。',q:'孫悟空離開師徒一行後，誰用激將法成功請他回來？',opts:['沙僧','豬八戒','白骨精','黃袍怪'],answer:1,explain:'文本指出，豬八戒前往花果山，並用激將法成功讓孫悟空歸隊。',events:['白骨精變成少婦接近唐僧，孫悟空識破並打死她','白骨精再變成老太婆與老公公，孫悟空仍出手','唐僧不相信悟空，悟空只好返回花果山','唐僧被黃袍怪抓走，豬八戒請回悟空，師兄弟合力救人'],whatif:'假如唐僧願意先聽孫悟空解釋，師徒關係可能如何改變？',choices:['他們可能一起查證線索，但仍要面對妖怪的威脅','白骨精會自動消失，之後沒有任何危機','孫悟空立刻成為唐僧的師父'],branch:['這可以保留主要危機，同時讓故事探索信任、溝通與共同查證。','這個結果解決得太快，可以加入新的阻礙，讓情節更完整。','角色關係突然改變，需要補上原因或關鍵事件。']},
- {id:'momotaro',name:'桃太郎',emoji:'🍑',tag:'合作與勇氣',desc:'桃太郎從桃子中誕生，長大後與白狗、猴子、雉雞同行前往鬼島，打敗鬼王並帶回財寶。',q:'桃太郎前往鬼島的旅途中，收服了哪三位同伴？',opts:['白狗、猴子、雉雞','狐狸、老虎、白兔','孫悟空、八戒、沙僧','白蛇、小青、許仙'],answer:0,explain:'文本中，桃太郎以智慧和勇氣收服白狗、猴子和雉雞，三位同伴與他一起前往鬼島。',events:['老夫婦發現巨大桃子，桃子裡蹦出桃太郎','桃太郎決定前往鬼島，途中收服白狗、猴子和雉雞','桃太郎與同伴搭船抵達鬼島，面對小鬼和鬼王','桃太郎一行打敗鬼王、帶回財寶，村子恢復和平'],whatif:'假如桃太郎沒有遇到三位動物同伴，他可以如何完成任務？',choices:['先觀察鬼島、尋找盟友，設計合作計畫','不做任何準備就直接衝進鬼島','立刻放棄，並且不說明原因'],branch:['這條路線能突出計畫、合作與勇氣，不一定要靠武力解決問題。','可以呈現勇敢，但若缺乏計畫，故事需要安排合理的後果。','如果選擇放棄，可以把它當作故事轉折，思考主角後來如何改變。']}
+ {id:'momotaro',name:'桃太郎',emoji:'🍑',tag:'合作與勇氣',desc:'桃太郎從桃子中誕生，長大後與白狗、猴子、雉雞同行前往鬼島，打敗鬼王並帶回財寶。',q:'桃太郎決定離開村子前往鬼島，最主要是為了什麼？',opts:['村子常受鬼怪侵擾，他想替村民除害','他想尋找自己的親生父母','老夫婦要他去島上取回桃子','他想向鬼王學習法術'],answer:0,explain:'文本提到村子時常受鬼怪侵擾，桃太郎因此決定前往鬼島，為村民除去禍害。',events:['老夫婦發現巨大桃子，桃子裡蹦出桃太郎','桃太郎決定前往鬼島，途中收服白狗、猴子和雉雞','桃太郎與同伴搭船抵達鬼島，面對小鬼和鬼王','桃太郎一行打敗鬼王、帶回財寶，村子恢復和平'],whatif:'假如桃太郎沒有遇到三位動物同伴，他可以如何完成任務？',choices:['先觀察鬼島、尋找盟友，設計合作計畫','不做任何準備就直接衝進鬼島','立刻放棄，並且不說明原因'],branch:['這條路線能突出計畫、合作與勇氣，不一定要靠武力解決問題。','可以呈現勇敢，但若缺乏計畫，故事需要安排合理的後果。','如果選擇放棄，可以把它當作故事轉折，思考主角後來如何改變。']}
 ];
+const storySecrets={
+ white:`白素貞是一條修煉千年的白蛇。她一直記得前世曾受一位善心人的救命之恩，修煉有成後，便化成人形前往杭州尋找那位恩人許仙。途中，她結識青蛇小青，兩人結伴同行。\n\n杭州多雨，白素貞展現法力與巧思，借雨傘與許仙相識。兩人漸生情意，結為夫妻。金山寺法海和尚看出白素貞的身分，認為人與蛇妖不能相戀，於是想方設法拆散他們。他讓許仙勸白素貞喝下雄黃酒；白素貞酒後現出白蛇原形，許仙受到驚嚇而昏倒。白素貞為救丈夫，冒險尋藥，終於使他甦醒。\n\n法海仍不肯放過白素貞，將許仙帶到金山寺。白素貞與小青前往救人，與法海展開激烈鬥法，最後仍不敵法海，被鎮在雷峰塔下。多年後，白素貞的兒子長大並考中狀元，前往塔前祭拜母親，終於救出白素貞。一家人得以團圓。`,
+ ding:`宋代有一位名叫定伯的人。有一天夜裡，他在南陽趕路，遇見一個鬼。定伯問：「你是誰？」鬼回答：「我是鬼。」鬼也反問他，定伯便機智地謊稱自己也是鬼。兩人互問要去哪裡，發現都要前往宛市，便結伴上路。\n\n走了一段路，鬼提議兩人輪流背對方。定伯先背鬼，走了幾里，鬼嫌他太重。定伯回答自己是新死的鬼，所以比較重。輪到鬼背定伯時，定伯覺得鬼輕得反常，便試探地問鬼害怕什麼。鬼說，鬼最怕人吐口水。\n\n他們來到河邊。定伯背著鬼過河時，自己的身體發出聲響，鬼卻一點聲音也沒有，這讓他更加確定對方不是普通人。定伯抓住鬼，鬼急忙變成一隻羊。定伯牢牢抓住羊角，把牠帶到宛市賣掉，賺了一千五百錢。`,
+ qian:`甯采臣赴京應考途中，遇上傾盆大雨，便到蘭若寺避雨。寺中道士燕赤霞告訴他這裡鬧鬼，勸他趕快離開；甯采臣沒有聽從。夜深後，他遇見名叫聶小倩的女子。小倩的屍骨被遺棄在荒野，因此受到千年樹妖姥姥控制。姥姥要她引誘旅人，小倩卻不忍心傷害甯采臣，便暗中提醒他離開。\n\n燕赤霞及時出手，甯采臣才知道小倩是受控制的女鬼。小倩請求他幫忙安葬屍骨，甯采臣答應帶她離開。樹妖姥姥發現小倩想逃，現出真身阻撓。燕赤霞拿起黃金劍與樹妖激戰，暫時救下兩人。\n\n不久，黑山老妖突然現身，把小倩抓往陰間，打算逼她成親。甯采臣與燕赤霞闖入陰間救人。燕赤霞再次施展黃金劍，擊敗黑山老妖，將小倩帶回人間。甯采臣把小倩的屍骨安葬在家鄉，使她擺脫控制、得以轉世投胎。`,
+ paint:`太原城有一位名叫王生的男子。一天，他在路上遇見一位逃家的女子。王生同情她，便將她收留並帶回家。妻子陳氏擔心女子來歷不明，勸王生小心，但王生沒有放在心上。\n\n後來，王生在市集遇見一位道士。道士看出他印堂發黑、身上纏著邪氣，便交給他一把蠅拂，叮嚀他掛在門口抵擋妖邪。王生回家後，聽信女子的話，將蠅拂取下。女子這才露出可怕真面目：她是一隻厲鬼，正用彩筆在人皮上畫出美麗容貌，再穿上人皮化作女子。\n\n王生嚇得向道士求救。道士趕來與厲鬼搏鬥，厲鬼打破蠅拂，闖進王生房中剖開他的胸膛，取走心臟，王生因此死去。道士斬下厲鬼的首級，告訴陳氏去市集尋找一位高歌起舞的乞丐。乞丐給她一團奇怪的東西，陳氏吞下後，竟吐出一顆活心臟。她把心臟放進王生胸膛，王生的呼吸慢慢恢復，最後活了過來。`,
+ journey:`唐僧師徒四人來到白虎嶺。白骨精想吃唐僧肉，先後變成一名送飯的少婦、一位老太婆和一位老公公，想接近唐僧。孫悟空有火眼金睛，看出三人都是妖怪，便出手打倒她們；白骨精每次都留下假身逃走。唐僧不知道對方是妖怪，以為孫悟空傷害無辜的人，責怪他並把他趕走。孫悟空傷心地返回花果山。\n\n後來，唐僧被黃袍怪抓走。豬八戒知道自己不是黃袍怪的對手，便前往花果山找孫悟空。他用激將法說唐僧遇險，終於請得孫悟空回來。悟空與師兄弟合力迎戰黃袍怪，救回唐僧。師徒重新團聚，繼續踏上取經之路。`,
+ momotaro:`很久以前，在一個偏僻的村子裡住著一對老夫婦。一天，老奶奶到河邊洗衣服，一顆巨大的桃子順流漂來。她把桃子帶回家，老爺爺剖開桃子，裡面竟蹦出一個小男孩。夫婦倆收養了他，取名桃太郎。\n\n桃太郎長大後，村子時常受到鬼怪侵擾。他決定前往鬼島，為村民除去禍害。路上，他先後遇見白狗、猴子和雉雞，便以智慧和勇氣邀請牠們同行。大家成為夥伴，一起搭船前往鬼島。\n\n抵達鬼島後，他們發現島上有許多小鬼，還有一個可怕的鬼王。桃太郎和三位夥伴彼此合作，勇敢迎戰，終於打敗鬼王。眾人在島上找到許多金銀財寶，帶回村子。村民因桃太郎的英勇行動而受到鼓舞，村子恢復和平與安定，桃太郎和老夫婦也過著幸福的日子。`
+};
 const extraQuestions={
  white:[{q:'白素貞與許仙成婚後，法海用什麼方式讓許仙看見白素貞的原形？',opts:['請他喝雄黃酒','帶他到雷峰塔','讓他照銅鏡','請他去鬼島'],answer:0,explain:'法海安排許仙讓白素貞喝雄黃酒，使她現出蛇形。'},{q:'白素貞被封印後，最後是誰前往雷峰塔祭拜並救她？',opts:['許仙','法海','她的兒子','小青'],answer:2,explain:'故事結尾，白素貞的兒子中狀元後前往塔前祭拜，救出母親。'}],
  ding:[{q:'定伯和鬼同行時，如何確認鬼沒有人的氣息？',opts:['聽牠過河時的聲音','看牠的影子','問路人','拿鏡子照牠'],answer:0,explain:'過河時定伯聽見自己有聲音，鬼卻沒有聲音，於是識破牠。'},{q:'故事最後，鬼被定伯變成什麼？',opts:['一隻羊','一匹馬','一隻狗','一顆石頭'],answer:0,explain:'定伯抓住鬼後，鬼變成羊，最後被他帶去賣掉。'}],
  qian:[{q:'甯采臣是在什麼地方遇見聶小倩？',opts:['蘭若寺','雷峰塔','鬼島','白虎嶺'],answer:0,explain:'甯采臣赴京途中躲進蘭若寺，並在那裡遇見聶小倩。'},{q:'燕赤霞用什麼武器對抗樹妖姥姥？',opts:['黃金劍','桃木弓','火把','銀色長槍'],answer:0,explain:'故事中燕赤霞使用黃金劍對抗並封印樹妖姥姥。'}],
  paint:[{q:'道士交給王生什麼物品，並叮嚀他如何使用？',opts:['一把拂塵，掛在門口','一把黃金劍，放在枕邊','一張符紙，貼在窗上','一面銅鏡，放在桌上'],answer:0,explain:'道士把拂塵交給王生，叮嚀他掛在門口，可以抵擋妖邪。'},{q:'陳氏最後依照道士指示，向誰取得救王生所需的活心臟？',opts:['乞丐','城門守衛','樹妖姥姥','王生的朋友'],answer:0,explain:'陳氏依指示尋找乞丐，取得活心臟救回王生。'}],
  journey:[{q:'孫悟空為什麼離開師徒一行？',opts:['唐僧不相信他，責怪他打死白骨精','他想去鬼島尋寶','他要找法海比武','他忘了取經的路'],answer:0,explain:'孫悟空識破白骨精卻遭唐僧責罵，因此離開師徒一行。'},{q:'孫悟空回來後，和師兄弟合力打敗了誰？',opts:['黃袍怪','白骨精','法海','樹妖姥姥'],answer:0,explain:'孫悟空回到師徒身邊後，師兄弟合力打敗黃袍怪，救回唐僧。'}],
- momotaro:[{q:'桃太郎是從什麼地方誕生的？',opts:['巨大桃子','山洞裡的蛋','一朵蓮花','神奇的木箱'],answer:0,explain:'老夫婦發現巨大桃子，桃子裡蹦出桃太郎。'},{q:'桃太郎和同伴前往鬼島，最後帶回什麼？',opts:['財寶','一把黃金劍','一封信','一艘新船'],answer:0,explain:'桃太郎一行打敗鬼王，帶回財寶，讓村子恢復和平。'}]
+ momotaro:[{q:'桃太郎一行抵達鬼島後，面對的是什麼情況？',opts:['島上有許多小鬼，並有可怕的鬼王','島上空無一人，只找到一艘船','鬼王已經先到村子拜訪老夫婦','島上只有一座藏著桃子的果園'],answer:0,explain:'故事寫到鬼島上有許多小鬼，還有一個可怕的鬼王，桃太郎和夥伴必須合作迎戰。'},{q:'桃太郎打敗鬼王、帶回財寶後，村子有什麼改變？',opts:['村民受到鼓舞，村子恢復和平與安定','村民離開村子，搬到鬼島居住','鬼怪變得更多，村子更加混亂','老夫婦把財寶全部藏起來，沒有人知道'],answer:0,explain:'桃太郎一行除去鬼怪後，村子恢復和平與安定；村民也因他的行動受到鼓舞。'}]
 };
 function loadSet(key){try{return new Set(JSON.parse(localStorage.getItem(key)||'[]'));}catch(e){return new Set();}}
 function saveSet(key,set){try{localStorage.setItem(key,JSON.stringify([...set]));}catch(e){}}
@@ -144,13 +161,16 @@ function updateStats(){
 function reward(key,amount=5,badge){if(earnedRefs.has(key))return false;earnedRefs.add(key);energy+=amount;if(badge)badges.add(badge);updateStats();return true;}
 function showTab(tab){
   if(tab==='workshop'&&quizCompleted.size<stories.length)return;
-  const view=tab==='challenge'?'storyChallenge':tab;
-  const navTab=tab==='challenge'?'library':tab;
+  const view=tab==='challenge'?'storyChallenge':tab==='secret'?'storySecret':tab;
+  const navTab=(tab==='challenge'||tab==='secret')?'library':tab;
   document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===navTab));
-  ['library','storyChallenge','workshop'].forEach(id=>$(id).classList.toggle('hidden',id!==view));
+  ['library','storyChallenge','storySecret','workshop'].forEach(id=>$(id).classList.toggle('hidden',id!==view));
 }
 document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
 $('backFromChallenge').onclick=()=>{showTab('library');renderLibrary();window.scrollTo({top:0,behavior:'smooth'});};
+$('backFromSecret').onclick=()=>{showTab('library');renderLibrary();window.scrollTo({top:0,behavior:'smooth'});};
+let secretStory=null;
+$('startQuizFromSecret').onclick=()=>{if(secretStory)openStory(secretStory);};
 
 let musicOn=false,introClosed=false;
 function updateMusicButtons(){const label=musicOn?'🔊 關閉配樂':'🔈 開啟配樂';$('musicToggle').textContent=label;$('musicToggle').setAttribute('aria-pressed',String(musicOn));$('introMusicButton').textContent=musicOn?'🔊 關閉配樂':'🎵 開啟配樂';}
@@ -163,11 +183,18 @@ $('saveName').onclick=()=>{const n=$('learnerName').value.trim();if(!n){$('login
 function renderLibrary(){
   $('storyGrid').innerHTML='';
   stories.forEach(s=>{
-    const b=document.createElement('button'),done=quizCompleted.has(s.id);
-    b.className='story-card'+(done?' is-complete':'');
-    b.innerHTML=`<span class="emoji">${s.emoji}</span><strong>${s.name}</strong>${done?'<span class="seal-stamp">🔴 第一關完成封印</span>':''}<span class="tag">${s.tag}</span><span>${s.desc}</span><span class="muted">${done?'✓ 三題問答完成':'點我開始第一關：三題問答 →'}</span>`;
-    b.onclick=()=>openStory(s);$('storyGrid').appendChild(b);
+    const card=document.createElement('article'),done=quizCompleted.has(s.id);
+    card.className='story-card'+(done?' is-complete':'');
+    card.innerHTML=`<span class="emoji">${s.emoji}</span><strong>${s.name}</strong>${done?'<span class="seal-stamp">🔴 第一關完成封印</span>':''}<div class="story-card-actions"><button class="btn" type="button" data-action="quiz">${done?'再看一次題目':'開始三題挑戰'}</button><button class="btn light" type="button" data-action="secret">📖 故事秘笈</button></div>`;
+    card.querySelector('[data-action="quiz"]').onclick=()=>openStory(s);
+    card.querySelector('[data-action="secret"]').onclick=()=>openSecret(s);
+    $('storyGrid').appendChild(card);
   });
+}
+function openSecret(s){
+  secretStory=s;$('secretTitle').textContent=s.emoji+' '+s.name;
+  const copy=$('secretCopy');copy.replaceChildren(...storySecrets[s.id].split('\n\n').map(text=>{const p=document.createElement('p');p.textContent=text;return p;}));
+  showTab('secret');window.scrollTo({top:0,behavior:'smooth'});
 }
 function openStory(s){
   currentStory=s;
@@ -188,7 +215,7 @@ function renderStoryStep(s,qs,progress){
   const d=$('storyDetail');d.classList.remove('page-in');void d.offsetWidth;d.classList.add('page-in');d.dataset.answered='0';
   if(progress.index>=3){finishQuiz(s);return;}
   const q=qs[progress.index];
-  d.innerHTML=`<span class="tag">第一關｜${s.name}｜第 ${progress.index+1}/3 題</span><h3>${s.emoji} ${s.name}</h3><p>${s.desc}</p><h3>${q.q}</h3><div class="choices">${q.opts.map((o,i)=>`<button class="choice" data-i="${i}">${'ABCD'[i]}. ${o}</button>`).join('')}</div><div id="storyAnswer" class="feedback hidden" aria-live="polite"></div><button class="btn gold hidden" id="nextStoryStep">${progress.index===2?'完成本篇故事 →':'下一題 →'}</button>`;
+  d.innerHTML=`<span class="tag">第一關｜${s.name}｜第 ${progress.index+1}/3 題</span><h3>${s.emoji} ${s.name}</h3><h3>${q.q}</h3><div class="choices">${q.opts.map((o,i)=>`<button class="choice" data-i="${i}">${'ABCD'[i]}. ${o}</button>`).join('')}</div><div id="storyAnswer" class="feedback hidden" aria-live="polite"></div><button class="btn gold hidden" id="nextStoryStep">${progress.index===2?'完成本篇故事 →':'下一題 →'}</button>`;
   d.querySelectorAll('.choice').forEach(btn=>btn.onclick=()=>{
     if(d.dataset.answered==='1')return;d.dataset.answered='1';const i=+btn.dataset.i;
     d.querySelectorAll('.choice').forEach(x=>{x.disabled=true;if(+x.dataset.i===q.answer)x.classList.add('correct')});
